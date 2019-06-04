@@ -18,7 +18,7 @@ type Server struct {
 }
 
 type SslLabsResponse struct {
-  Endpoints []Server  `json:"endpoints"`
+  Servers   []Server  `json:"endpoints"`
   Title     string
   Logo      string
 }
@@ -52,11 +52,11 @@ func GetServerData(domain string) SslLabsResponse {
 }
 
 func (apiResponse *SslLabsResponse) AddExternalData(domain string) {
-  for index, _ := range apiResponse.Endpoints {
-    owner, country := WhoIs(apiResponse.Endpoints[index].Address)
+  for index, _ := range apiResponse.Servers {
+    owner, country := WhoIs(apiResponse.Servers[index].Address)
 
-    apiResponse.Endpoints[index].Country = country
-    apiResponse.Endpoints[index].Owner = owner
+    apiResponse.Servers[index].Country = country
+    apiResponse.Servers[index].Owner = owner
   }
 
   title, logo := GetDomainHead(domain)

@@ -8,12 +8,12 @@ import (
 func TestGetServerDataIsOk(t *testing.T) {
   data := servers.GetServerData("google.com")
 
-  if len(data.Endpoints) != 2 {
-    t.Errorf("TestGetServerDataIsOk(google.com) got %d servers; should be 2", len(data.Endpoints))
+  if len(data.Servers) != 2 {
+    t.Errorf("TestGetServerDataIsOk(google.com) got %d servers; should be 2", len(data.Servers))
   }
 
-  server1 := data.Endpoints[0]
-  server2 := data.Endpoints[1]
+  server1 := data.Servers[0]
+  server2 := data.Servers[1]
 
   expectedServer1 := servers.Server{
     Address: "172.217.5.110",
