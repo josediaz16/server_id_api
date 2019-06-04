@@ -23,8 +23,11 @@ type SslLabsResponse struct {
   Port      int       `json:"port"`
 }
 
+const WhoIsCmd = "whois %s | grep -E \\(Country\\|OrgName\\) | awk '{print $2}' | xargs"
+
 func GetServerData(domain string) SslLabsResponse {
   client := &http.Client{}
+  result := SslLabsResponse{}
 
   req, _ := http.NewRequest("GET", "https://api.ssllabs.com/api/v3/analyze", nil)
   query := req.URL.Query()
@@ -40,8 +43,6 @@ func GetServerData(domain string) SslLabsResponse {
 
   defer resp.Body.Close()
 
-  result := SslLabsResponse{}
-
   temp, _ := ioutil.ReadAll(resp.Body)
 
   err = json.Unmarshal(temp, &result)
@@ -52,13 +53,23 @@ func GetServerData(domain string) SslLabsResponse {
 
 func buildServerData(apiResponse *SslLabsResponse) {
   for index, _ := range apiResponse.Endpoints {
-    command := fmt.Sprintf("whois %s | grep -E \\(Country\\|OrgName\\) | awk '{print $2}' | xargs", apiResponse.Endpoints[index].Address)
+    owner, country := WhoIs(apiResponse.Endpoints[index].Address)
 
-    out, _ := exec.Command("bash", "-c", command).Output()
-    commandValues := strings.Split(strings.TrimRight(string(out), "\r\n"), " ")
-
-    log.Printf("command %v", commandValues)
-    apiResponse.Endpoints[index].Country = commandValues[1]
-    apiResponse.Endpoints[index].Owner = commandValues[0]
+    apiResponse.Endpoints[index].Country = country
+    apiResponse.Endpoints[index].Owner = owner
   }
+}
+
+func WhoIs(ip string) (string, string) {
+  command := fmt.Sprintf(WhoIsCmd, ip)
+  out, err := exec.Command("bash", "-c", command).Output()
+
+  if err != nil {
+    log.Printf("Error executing WHOIS, err %v", err)
+    return "", ""
+  }
+
+  trimmedOutput := strings.TrimRight(string(out), "\r\n")
+  commandValues := strings.Split(trimmedOutput, " ")
+  return commandValues[0], commandValues[1]
 }
