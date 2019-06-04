@@ -19,8 +19,8 @@ type Server struct {
 
 type SslLabsResponse struct {
   Endpoints []Server  `json:"endpoints"`
-  Host      string    `json:"host"`
-  Port      int       `json:"port"`
+  Title     string
+  Logo      string
 }
 
 const WhoIsCmd = "whois %s | grep -E \\(Country\\|OrgName\\) | awk '{print $2}' | xargs"
@@ -46,18 +46,22 @@ func GetServerData(domain string) SslLabsResponse {
   temp, _ := ioutil.ReadAll(resp.Body)
 
   err = json.Unmarshal(temp, &result)
-  buildServerData(&result)
+  result.AddExternalData(domain)
 
   return result
 }
 
-func buildServerData(apiResponse *SslLabsResponse) {
+func (apiResponse *SslLabsResponse) AddExternalData(domain string) {
   for index, _ := range apiResponse.Endpoints {
     owner, country := WhoIs(apiResponse.Endpoints[index].Address)
 
     apiResponse.Endpoints[index].Country = country
     apiResponse.Endpoints[index].Owner = owner
   }
+
+  title, logo := GetDomainHead(domain)
+  apiResponse.Logo = logo
+  apiResponse.Title = title
 }
 
 func WhoIs(ip string) (string, string) {
