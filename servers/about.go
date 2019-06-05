@@ -50,6 +50,7 @@ func (apiResponse *SslLabsResponse) AddExternalData(domain string) {
     owner, country := WhoIs(apiResponse.Servers[index].Address)
 
     if apiResponse.Servers[index].Status == "Unable to connect to the server" {
+      apiResponse.Servers[index].SslGrade = "U"      // Mark SslGrade as unknown if server is down
       apiResponse.IsDown = true
     }
 

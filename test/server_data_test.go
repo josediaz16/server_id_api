@@ -48,7 +48,7 @@ func TestGetServerDataIsOk(t *testing.T) {
 
   expectedServer2 := servers.Server{
     Address: "2607:f8b0:4005:808:0:0:0:200e",
-    SslGrade: "",
+    SslGrade: "U",
     Status: "Unable to connect to the server",
     Country: "US",
     Owner: "Google",
