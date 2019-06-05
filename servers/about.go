@@ -7,29 +7,14 @@ import (
   "os/exec"
   "strings"
   "server_id_api/api"
+  "server_id_api/model"
   "sort"
 )
 
-type Server struct {
-  Address  string `json:"ipAddress"`
-  SslGrade string `json:"grade"`
-  Status   string `json:"statusMessage"`
-  Country  string
-  Owner    string
-}
-
-type SslLabsResponse struct {
-  Servers   []Server  `json:"endpoints"`
-  Title     string
-  Logo      string
-  SslGrade  string
-  IsDown    bool
-}
-
 const WhoIsCmd = "whois %s | grep -E \\(Country\\|OrgName\\) | awk '{print $2}' | xargs"
 
-func GetServerData(apiClient *api.API, domain string) SslLabsResponse {
-  result := SslLabsResponse{}
+func GetServerData(apiClient *api.API, domain string) model.Domain {
+  result := model.Domain{}
 
   var queryString = map[string]string{
     "host": domain,
@@ -42,32 +27,35 @@ func GetServerData(apiClient *api.API, domain string) SslLabsResponse {
   }
 
   json.Unmarshal(body, &result)
-  result.AddExternalData(domain)
+  addExternalData(domain, &result)
+  result.Persist()
 
   return result
 }
 
-func (apiResponse *SslLabsResponse) AddExternalData(domain string) {
-  sslGrades := make([]string, len(apiResponse.Servers))
+func addExternalData(domainName string, domain *model.Domain) {
+  sslGrades := make([]string, len(domain.Servers))
 
-  for index, _ := range apiResponse.Servers {
-    owner, country := WhoIs(apiResponse.Servers[index].Address)
+  for index, _ := range domain.Servers {
+    //owner, country := WhoIs(domain.Servers[index].Address)
 
-    if apiResponse.Servers[index].Status == "Unable to connect to the server" {
-      apiResponse.Servers[index].SslGrade = "U"      // Mark SslGrade as unknown if server is down
-      apiResponse.IsDown = true
+    if domain.Servers[index].Status == "Unable to connect to the server" {
+      domain.Servers[index].SslGrade = "U"      // Mark SslGrade as unknown if server is down
+      domain.IsDown = true
     }
 
-    sslGrades[index] = apiResponse.Servers[index].SslGrade
+    sslGrades[index] = domain.Servers[index].SslGrade
 
-    apiResponse.Servers[index].Country = owner
-    apiResponse.Servers[index].Owner = country
+    domain.Servers[index].Country = "US"
+    domain.Servers[index].Owner = "Google"
   }
 
-  title, logo := GetDomainHead(domain)
-  apiResponse.Logo = logo
-  apiResponse.Title = title
-  apiResponse.SslGrade = defineGlobalGrade(sslGrades)
+  title, logo := GetDomainHead(domainName)
+
+  domain.Name = domainName
+  domain.Logo = logo
+  domain.Title = title
+  domain.SslGrade = defineGlobalGrade(sslGrades)
 }
 
 func WhoIs(ip string) (string, string) {

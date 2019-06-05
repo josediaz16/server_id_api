@@ -12,6 +12,8 @@ services:
       - roach1
       - roach2
       - roach3
+    networks:
+      - roachnet
 
   roach1:
     container_name: roach1

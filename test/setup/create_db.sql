@@ -11,6 +11,7 @@ CREATE TABLE servers_test.domains (
   ssl_grade   STRING    NOT NULL,
   title       STRING    NOT NULL,
   logo        STRING    NOT NULL DEFAULT '',
+  is_down     BOOL      NOT NULL,
   updated_at  TIMESTAMP NOT NULL DEFAULT now()
 );
 
