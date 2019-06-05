@@ -1,4 +1,4 @@
-package server_data_test
+package servers_test
 
 import (
   "testing"
@@ -27,7 +27,7 @@ func mockRequest(fixtureFile string) (*httptest.Server) {
 }
 
 func TestGetServerDataServerDown(t *testing.T) {
-  server := mockRequest("fixtures/ssllabs_down_server.json")
+  server := mockRequest("../fixtures/ssllabs_down_server.json")
   defer server.Close()
 
   apiClient := api.API{server.Client(), server.URL}
@@ -74,7 +74,7 @@ func TestGetServerDataServerDown(t *testing.T) {
 }
 
 func TestGetServerDataServerOk(t *testing.T) {
-  server := mockRequest("fixtures/ssllabs_server_ok.json")
+  server := mockRequest("../fixtures/ssllabs_server_ok.json")
   defer server.Close()
 
   apiClient := api.API{server.Client(), server.URL}
@@ -117,20 +117,5 @@ func TestGetServerDataServerOk(t *testing.T) {
 
   if data.IsDown {
     t.Errorf("TestGetServerDataIsOk(google.com) got IsDown true; should be false")
-  }
-}
-
-func TestGetDomainHeadIsOk(t *testing.T) {
-  title, logo := servers.GetDomainHead("stackoverflow.com")
-
-  expectedTitle := "Stack Overflow - Where Developers Learn, Share, & Build Careers"
-  expectedLogo := "https://cdn.sstatic.net/Sites/stackoverflow/img/favicon.ico?v=4f32ecc8f43d"
-
-  if title != expectedTitle {
-    t.Errorf("TestGetDomainHeadIsOk(stackoverflow.com) got title %v, should be %v", title, expectedTitle)
-  }
-
-  if logo != expectedLogo {
-    t.Errorf("TestGetDomainHeadIsOk(stackoverflow.com) got logo %v, should be %v", logo, expectedLogo)
   }
 }
