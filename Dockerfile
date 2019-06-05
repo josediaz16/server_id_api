@@ -16,6 +16,6 @@ RUN go get -d -v ./...
 RUN go install -v ./...
 RUN go mod tidy
 
-EXPOSE 8080
+EXPOSE 3000
 
 CMD ["server_id_api"]

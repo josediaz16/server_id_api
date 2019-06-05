@@ -8,3 +8,71 @@ services:
       - ./:/go/src/server_id_api
     ports:
       - 3000:3000
+    depends_on:
+      - roach1
+      - roach2
+      - roach3
+
+  roach1:
+    container_name: roach1
+    image: cockroachdb/cockroach:v19.1.1
+    command: start --insecure
+    ports:
+      - 26257:26257
+      - 8080:8080
+    volumes:
+      - cockroach_data1:/cockroach/cockroach-data
+    networks:
+      roachnet:
+        aliases:
+          - roach1
+
+  roach2:
+    container_name: roach2
+    image: cockroachdb/cockroach:v19.1.1
+    command: start --insecure --join=roach1
+    volumes:
+      - cockroach_data2:/cockroach/cockroach-data
+    depends_on:
+      - roach1
+    networks:
+      roachnet:
+        aliases:
+          - roach2
+
+  roach3:
+    container_name: roach3
+    image: cockroachdb/cockroach:v19.1.1
+    command: start --insecure --join=roach1
+    volumes:
+      - cockroach_data3:/cockroach/cockroach-data
+    depends_on:
+      - roach1
+    networks:
+      roachnet:
+        aliases:
+          - roach3
+
+  db_test_init:
+    image: cockroachdb/cockroach:v19.1.1
+    depends_on:
+      - roach2
+    volumes:
+      - ./test/setup/setup_test_db.sh:/setup_db.sh
+      - ./test/setup/create_db.sql:/create_db.sql
+    entrypoint: "/bin/bash"
+    command: /setup_db.sh
+    networks:
+      - roachnet
+
+networks:
+  roachnet:
+    driver: bridge
+
+volumes:
+  cockroach_data1:
+    driver: local
+  cockroach_data2:
+    driver: local
+  cockroach_data3:
+    driver: local
