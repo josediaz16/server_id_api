@@ -8,6 +8,3 @@ services:
       - ./:/go/src/server_id_api
     ports:
       - 3000:3000
-    environment:
-      - GO111MODULE=on
-      - CGO_ENABLED=0
