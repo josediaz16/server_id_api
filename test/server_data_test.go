@@ -2,11 +2,34 @@ package server_data_test
 
 import (
   "testing"
+  "io/ioutil"
+  "os"
   "server_id_api/servers"
+  "server_id_api/api"
+  "net/http"
+  "net/http/httptest"
 )
 
+func getServerResponse(fixtureFile string) ([]byte) {
+  jsonFile, _ := os.Open(fixtureFile)
+  defer jsonFile.Close()
+
+  byteValue, _ := ioutil.ReadAll(jsonFile)
+  return byteValue
+}
+
 func TestGetServerDataIsOk(t *testing.T) {
-  data := servers.GetServerData("google.com")
+  mockedResponse := getServerResponse("fixtures/ssllabs_down_server.json")
+
+  server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+    rw.Write([]byte(mockedResponse))
+  }))
+
+  defer server.Close()
+
+  apiClient := api.API{server.Client(), server.URL}
+
+  data := servers.GetServerData(&apiClient, "google.com")
 
   if len(data.Servers) != 2 {
     t.Errorf("TestGetServerDataIsOk(google.com) got %d servers; should be 2", len(data.Servers))
@@ -18,13 +41,15 @@ func TestGetServerDataIsOk(t *testing.T) {
   expectedServer1 := servers.Server{
     Address: "172.217.5.110",
     SslGrade: "A",
+    Status: "Ready",
     Country: "US",
     Owner:  "Google",
   }
 
   expectedServer2 := servers.Server{
     Address: "2607:f8b0:4005:808:0:0:0:200e",
-    SslGrade: "A",
+    SslGrade: "",
+    Status: "Unable to connect to the server",
     Country: "US",
     Owner: "Google",
   }
@@ -39,6 +64,10 @@ func TestGetServerDataIsOk(t *testing.T) {
 
   if data.Title != "Google" {
     t.Errorf("TestGetServerDataIsOk(google.com) got title %v; should be Google", data.Title)
+  }
+
+  if !data.IsDown {
+    t.Errorf("TestGetServerDataIsOk(google.com) got IsDown false; should be true")
   }
 }
 

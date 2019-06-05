@@ -1,0 +1,36 @@
+{
+  "host": "google.com",
+  "port": 443,
+  "protocol": "http",
+  "isPublic": false,
+  "status": "READY",
+  "startTime": 1559705574449,
+  "testTime": 1559705814054,
+  "engineVersion": "1.35.1",
+  "criteriaVersion": "2009p",
+  "endpoints": [
+    {
+      "ipAddress": "172.217.5.110",
+      "serverName": "sfo03s07-in-f14.1e100.net",
+      "statusMessage": "Ready",
+      "grade": "A",
+      "gradeTrustIgnored": "A",
+      "hasWarnings": false,
+      "isExceptional": false,
+      "progress": 100,
+      "duration": 95080,
+      "delegation": 1
+    },
+    {
+      "ipAddress": "2607:f8b0:4005:808:0:0:0:200e",
+      "serverName": "sfo03s07-in-x0e.1e100.net",
+      "statusMessage": "Unable to connect to the server",
+      "statusDetails": "TESTING_SUITES",
+      "statusDetailsMessage": "Determining available cipher suites",
+      "progress": 51,
+      "duration": 144430,
+      "eta": 513,
+      "delegation": 1
+    }
+  ]
+}

@@ -5,6 +5,8 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /go/src/server_id_api
 
+RUN apk add whois
+
 COPY . .
 
 RUN go get -d -v ./...

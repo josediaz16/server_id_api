@@ -2,17 +2,17 @@ package servers
 
 import (
   "fmt"
-  "io/ioutil"
   "log"
-  "net/http"
   "encoding/json"
   "os/exec"
   "strings"
+  "server_id_api/api"
 )
 
 type Server struct {
   Address  string `json:"ipAddress"`
   SslGrade string `json:"grade"`
+  Status   string `json:"statusMessage"`
   Country  string
   Owner    string
 }
@@ -21,31 +21,25 @@ type SslLabsResponse struct {
   Servers   []Server  `json:"endpoints"`
   Title     string
   Logo      string
+  IsDown    bool
 }
 
 const WhoIsCmd = "whois %s | grep -E \\(Country\\|OrgName\\) | awk '{print $2}' | xargs"
 
-func GetServerData(domain string) SslLabsResponse {
-  client := &http.Client{}
+func GetServerData(apiClient *api.API, domain string) SslLabsResponse {
   result := SslLabsResponse{}
 
-  req, _ := http.NewRequest("GET", "https://api.ssllabs.com/api/v3/analyze", nil)
-  query := req.URL.Query()
+  var queryString = map[string]string{
+    "host": domain,
+  }
 
-  query.Add("host", domain)
-  req.URL.RawQuery = query.Encode()
-
-  resp, err := client.Do(req)
+  body, err := apiClient.GetWithParams("/api/v3/analyze", queryString)
 
   if err != nil {
     log.Printf("Error making request with domain %s, err: %vx", domain, err)
   }
 
-  defer resp.Body.Close()
-
-  temp, _ := ioutil.ReadAll(resp.Body)
-
-  err = json.Unmarshal(temp, &result)
+  json.Unmarshal(body, &result)
   result.AddExternalData(domain)
 
   return result
@@ -54,6 +48,10 @@ func GetServerData(domain string) SslLabsResponse {
 func (apiResponse *SslLabsResponse) AddExternalData(domain string) {
   for index, _ := range apiResponse.Servers {
     owner, country := WhoIs(apiResponse.Servers[index].Address)
+
+    if apiResponse.Servers[index].Status == "Unable to connect to the server" {
+      apiResponse.IsDown = true
+    }
 
     apiResponse.Servers[index].Country = country
     apiResponse.Servers[index].Owner = owner
