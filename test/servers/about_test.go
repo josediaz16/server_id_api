@@ -71,6 +71,10 @@ func TestGetServerDataServerDown(t *testing.T) {
   if !data.IsDown {
     t.Errorf("TestGetServerDataIsOk(google.com) got IsDown false; should be true")
   }
+
+  if data.SslGrade != "U" {
+    t.Errorf("TestGetServerDataIsOk(google.com) got SslGrade %s; should be U", data.SslGrade)
+  }
 }
 
 func TestGetServerDataServerOk(t *testing.T) {
@@ -117,5 +121,9 @@ func TestGetServerDataServerOk(t *testing.T) {
 
   if data.IsDown {
     t.Errorf("TestGetServerDataIsOk(google.com) got IsDown true; should be false")
+  }
+
+  if data.SslGrade != "A" {
+    t.Errorf("TestGetServerDataIsOk(google.com) got SslGrade %s; should be A", data.SslGrade)
   }
 }

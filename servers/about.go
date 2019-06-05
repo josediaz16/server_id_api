@@ -7,6 +7,7 @@ import (
   "os/exec"
   "strings"
   "server_id_api/api"
+  "sort"
 )
 
 type Server struct {
@@ -21,6 +22,7 @@ type SslLabsResponse struct {
   Servers   []Server  `json:"endpoints"`
   Title     string
   Logo      string
+  SslGrade  string
   IsDown    bool
 }
 
@@ -46,6 +48,8 @@ func GetServerData(apiClient *api.API, domain string) SslLabsResponse {
 }
 
 func (apiResponse *SslLabsResponse) AddExternalData(domain string) {
+  sslGrades := make([]string, len(apiResponse.Servers))
+
   for index, _ := range apiResponse.Servers {
     owner, country := WhoIs(apiResponse.Servers[index].Address)
 
@@ -54,13 +58,16 @@ func (apiResponse *SslLabsResponse) AddExternalData(domain string) {
       apiResponse.IsDown = true
     }
 
-    apiResponse.Servers[index].Country = country
-    apiResponse.Servers[index].Owner = owner
+    sslGrades[index] = apiResponse.Servers[index].SslGrade
+
+    apiResponse.Servers[index].Country = owner
+    apiResponse.Servers[index].Owner = country
   }
 
   title, logo := GetDomainHead(domain)
   apiResponse.Logo = logo
   apiResponse.Title = title
+  apiResponse.SslGrade = defineGlobalGrade(sslGrades)
 }
 
 func WhoIs(ip string) (string, string) {
@@ -75,4 +82,9 @@ func WhoIs(ip string) (string, string) {
   trimmedOutput := strings.TrimRight(string(out), "\r\n")
   commandValues := strings.Split(trimmedOutput, " ")
   return commandValues[0], commandValues[1]
+}
+
+func defineGlobalGrade(sslGrades []string) string {
+  sort.Strings(sslGrades)
+  return sslGrades[len(sslGrades) - 1]
 }
