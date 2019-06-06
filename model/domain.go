@@ -18,6 +18,7 @@ type Server struct {
 
 type Domain struct {
   Servers   []Server  `json:"endpoints"`
+  Status    string    `json:"status"`
   Id        int
   Name      string
   Title     string

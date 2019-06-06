@@ -60,12 +60,12 @@ func mockRequest(fixtureFile string) (*httptest.Server) {
   }))
 }
 
-func getData(fixtureFile string) (domain model.Domain) {
+func getData(fixtureFile string, domainName string) (domain model.Domain) {
   server := mockRequest(fixtureFile)
   defer server.Close()
 
   apiClient := api.API{server.Client(), server.URL}
-  return servers.GetServerData(&apiClient, "google.com")
+  return servers.GetServerData(&apiClient, domainName)
 }
 
 // Begin Test Cases
@@ -73,7 +73,7 @@ func getData(fixtureFile string) (domain model.Domain) {
 func TestGetServerDataServerDown(t *testing.T) {
   SetupTest()
 
-  data := getData("../fixtures/ssllabs_down_server.json")
+  data := getData("../fixtures/ssllabs_down_server.json", "google.com")
 
   server1 := data.Servers[0]
   server2 := data.Servers[1]
@@ -101,7 +101,7 @@ func TestGetServerDataServerDown(t *testing.T) {
 
 func TestGetServerDataServerOk(t *testing.T) {
   SetupTest()
-  data := getData("../fixtures/ssllabs_server_ok.json")
+  data := getData("../fixtures/ssllabs_server_ok.json", "google.com")
 
   server1 := data.Servers[0]
   server2 := data.Servers[1]
@@ -138,7 +138,7 @@ func TestGetServerDataServerChanged(t *testing.T) {
   domain.UpdatedAt = time.Now().Add(-2*time.Hour).Format(model.TimeLayout)
   domain.Update()
 
-  data := getData("../fixtures/ssllabs_server_ok.json")
+  data := getData("../fixtures/ssllabs_server_ok.json", "google.com")
 
   server1 := data.Servers[0]
   server2 := data.Servers[1]
@@ -176,7 +176,7 @@ func TestGetServerDataServerNotChanged(t *testing.T) {
   domain.UpdatedAt = time.Now().Add(-2*time.Hour).Format(model.TimeLayout)
   domain.Update()
 
-  data := getData("../fixtures/ssllabs_server_ok.json")
+  data := getData("../fixtures/ssllabs_server_ok.json", "google.com")
 
   server1 := data.Servers[0]
   server2 := data.Servers[1]
@@ -232,7 +232,7 @@ func TestGetServerDataBetweenTime(t *testing.T) {
   domain.UpdatedAt = time.Now().Add(-58*time.Minute).Format(model.TimeLayout)
   domain.Update()
 
-  data := getData("../fixtures/ssllabs_server_ok.json")
+  data := getData("../fixtures/ssllabs_server_ok.json", "google.com")
 
   server1 := data.Servers[0]
   server2 := data.Servers[1]
@@ -253,5 +253,27 @@ func TestGetServerDataBetweenTime(t *testing.T) {
     "Server Count":     []interface{}{countServers, 2},
   }
 
+  runExpectations(t, expectations)
+}
+
+func TestGetServerDataServerNotFound(t *testing.T) {
+  SetupTest()
+
+  data := getData("../fixtures/server_not_found.json", "dontexist.co")
+
+  countDomains, _ := conn.Count("domains")
+  countServers, _ := conn.Count("servers")
+
+  var expectations = map[string][]interface{}{
+    "servers":          []interface{}{len(data.Servers), 0},
+    "Title":            []interface{}{data.Title, ""},
+    "IsDown":           []interface{}{data.IsDown, true},
+    "SslGrade":         []interface{}{data.SslGrade, "U"},
+    "ServersChanged":   []interface{}{data.ServersChanged, false},
+    "Domain Count":     []interface{}{countDomains, 1},
+    "Server Count":     []interface{}{countServers, 0},
+  }
+
+  //Expectations
   runExpectations(t, expectations)
 }

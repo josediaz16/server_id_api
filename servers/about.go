@@ -37,7 +37,7 @@ func addExternalData(domainName string, domain *model.Domain) {
   sslGrades := make([]string, len(domain.Servers))
 
   for index, _ := range domain.Servers {
-    //owner, country := WhoIs(domain.Servers[index].Address)
+    owner, country := WhoIs(domain.Servers[index].Address)
 
     if domain.Servers[index].Status == "Unable to connect to the server" {
       domain.Servers[index].SslGrade = "U"      // Mark SslGrade as unknown if server is down
@@ -46,8 +46,8 @@ func addExternalData(domainName string, domain *model.Domain) {
 
     sslGrades[index] = domain.Servers[index].SslGrade
 
-    domain.Servers[index].Country = "US"
-    domain.Servers[index].Owner = "Google"
+    domain.Servers[index].Country = country
+    domain.Servers[index].Owner = owner
   }
 
   title, logo := GetDomainHead(domainName)
@@ -55,6 +55,7 @@ func addExternalData(domainName string, domain *model.Domain) {
   domain.Name = domainName
   domain.Logo = logo
   domain.Title = title
+  domain.IsDown = domain.IsDown || domain.Status != "READY"
   domain.SslGrade = defineGlobalGrade(sslGrades)
 }
 
@@ -74,5 +75,11 @@ func WhoIs(ip string) (string, string) {
 
 func defineGlobalGrade(sslGrades []string) string {
   sort.Strings(sslGrades)
-  return sslGrades[len(sslGrades) - 1]
+  numberOfGrades := len(sslGrades)
+
+  if numberOfGrades != 0 {
+    return sslGrades[len(sslGrades) - 1]
+  }
+
+  return "U"
 }

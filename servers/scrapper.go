@@ -11,7 +11,8 @@ func GetDomainHead(domain string) (string, string) {
   response, err := http.Get(fmt.Sprintf("http://%s", domain))
 
   if err != nil {
-    log.Fatal(err)
+    log.Printf("Error scrapping %s, %v", domain, err)
+    return "", ""
   }
 
   defer response.Body.Close()
@@ -20,6 +21,7 @@ func GetDomainHead(domain string) (string, string) {
 
   if err != nil {
     log.Fatal("Error parsing Response body. ", err)
+    return "", ""
   }
 
   title := document.Find("title").Text()
