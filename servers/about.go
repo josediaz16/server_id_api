@@ -14,7 +14,7 @@ import (
 const WhoIsCmd = "whois %s | grep -E \\(Country\\|OrgName\\) | awk '{print $2}' | xargs"
 
 func GetServerData(apiClient *api.API, domain string) model.Domain {
-  result := model.Domain{}
+  var result model.Domain
 
   var queryString = map[string]string{
     "host": domain,

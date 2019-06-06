@@ -10,6 +10,7 @@ import (
   "server_id_api/db"
   "net/http"
   "net/http/httptest"
+  "time"
 )
 var conn *db.Conn = db.NewConn()
 
@@ -150,6 +151,170 @@ func TestGetServerDataServerOk(t *testing.T) {
 
   if data.SslGrade != "A" {
     t.Errorf("TestGetServerDataIsOk(google.com) got SslGrade %s; should be A", data.SslGrade)
+  }
+
+  countDomains, _ := conn.Count("domains")
+
+  if countDomains != 1 {
+    t.Errorf("TestGetServerDataIsOk(google.com) got %d domains in DB; should be 1", countDomains)
+  }
+
+  countServers, _ := conn.Count("servers")
+
+  if countServers != 2 {
+    t.Errorf("TestGetServerDataIsOk(google.com) got %d servers in DB; should be 2", countServers)
+  }
+}
+
+func TestGetServerDataServerChanged(t *testing.T) {
+  SetupTest()
+  domain := model.Domain{
+    Name: "google.com",
+    SslGrade: "U",
+    Title: "Google",
+    Logo: "mylogo.png",
+    IsDown: true,
+  }
+
+  domain.Insert()
+  domain.UpdatedAt = time.Now().Add(-2*time.Hour).Format(model.TimeLayout)
+  domain.Update()
+
+  server := mockRequest("../fixtures/ssllabs_server_ok.json")
+  defer server.Close()
+
+  apiClient := api.API{server.Client(), server.URL}
+  data := servers.GetServerData(&apiClient, "google.com")
+
+  if len(data.Servers) != 2 {
+    t.Errorf("TestGetServerDataIsOk(google.com) got %d servers; should be 2", len(data.Servers))
+  }
+
+  server1 := data.Servers[0]
+  server2 := data.Servers[1]
+
+  expectedServer1 := model.Server{
+    Address: "172.217.5.110",
+    SslGrade: "A",
+    Status: "Ready",
+    Country: "US",
+    Owner:  "Google",
+  }
+
+  expectedServer2 := model.Server{
+    Address: "2607:f8b0:4005:808:0:0:0:200e",
+    SslGrade: "A",
+    Status: "Ready",
+    Country: "US",
+    Owner: "Google",
+  }
+
+  //Expectations
+
+  if server1 != expectedServer1 {
+    t.Errorf("TestGetServerDataIsOk(google.com) got %v server 1; should be %v", server1, expectedServer1)
+  }
+
+  if server2 != expectedServer2 {
+    t.Errorf("TestGetServerDataIsOk(google.com) got %v server 2; should be %v", server2, expectedServer2)
+  }
+
+  if data.Title != "Google" {
+    t.Errorf("TestGetServerDataIsOk(google.com) got title %v; should be Google", data.Title)
+  }
+
+  if data.IsDown {
+    t.Errorf("TestGetServerDataIsOk(google.com) got IsDown true; should be false")
+  }
+
+  if data.SslGrade != "A" {
+    t.Errorf("TestGetServerDataIsOk(google.com) got SslGrade %s; should be A", data.SslGrade)
+  }
+
+  if !data.ServersChanged {
+    t.Errorf("TestGetServerDataIsOk(google.com) got ServersChanged false; should be true")
+  }
+
+  countDomains, _ := conn.Count("domains")
+
+  if countDomains != 1 {
+    t.Errorf("TestGetServerDataIsOk(google.com) got %d domains in DB; should be 1", countDomains)
+  }
+
+  countServers, _ := conn.Count("servers")
+
+  if countServers != 2 {
+    t.Errorf("TestGetServerDataIsOk(google.com) got %d servers in DB; should be 2", countServers)
+  }
+}
+
+func TestGetServerDataServerNotChanged(t *testing.T) {
+  SetupTest()
+  domain := model.Domain{
+    Name: "google.com",
+    SslGrade: "A",
+    Title: "Google",
+    Logo: "mylogo.png",
+    IsDown: true,
+  }
+
+  domain.Insert()
+  domain.UpdatedAt = time.Now().Add(-2*time.Hour).Format(model.TimeLayout)
+  domain.Update()
+
+  server := mockRequest("../fixtures/ssllabs_server_ok.json")
+  defer server.Close()
+
+  apiClient := api.API{server.Client(), server.URL}
+  data := servers.GetServerData(&apiClient, "google.com")
+
+  if len(data.Servers) != 2 {
+    t.Errorf("TestGetServerDataIsOk(google.com) got %d servers; should be 2", len(data.Servers))
+  }
+
+  server1 := data.Servers[0]
+  server2 := data.Servers[1]
+
+  expectedServer1 := model.Server{
+    Address: "172.217.5.110",
+    SslGrade: "A",
+    Status: "Ready",
+    Country: "US",
+    Owner:  "Google",
+  }
+
+  expectedServer2 := model.Server{
+    Address: "2607:f8b0:4005:808:0:0:0:200e",
+    SslGrade: "A",
+    Status: "Ready",
+    Country: "US",
+    Owner: "Google",
+  }
+
+  //Expectations
+
+  if server1 != expectedServer1 {
+    t.Errorf("TestGetServerDataIsOk(google.com) got %v server 1; should be %v", server1, expectedServer1)
+  }
+
+  if server2 != expectedServer2 {
+    t.Errorf("TestGetServerDataIsOk(google.com) got %v server 2; should be %v", server2, expectedServer2)
+  }
+
+  if data.Title != "Google" {
+    t.Errorf("TestGetServerDataIsOk(google.com) got title %v; should be Google", data.Title)
+  }
+
+  if data.IsDown {
+    t.Errorf("TestGetServerDataIsOk(google.com) got IsDown true; should be false")
+  }
+
+  if data.SslGrade != "A" {
+    t.Errorf("TestGetServerDataIsOk(google.com) got SslGrade %s; should be A", data.SslGrade)
+  }
+
+  if data.ServersChanged {
+    t.Errorf("TestGetServerDataIsOk(google.com) got ServersChanged true; should be false")
   }
 
   countDomains, _ := conn.Count("domains")
