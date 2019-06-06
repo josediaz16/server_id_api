@@ -13,6 +13,10 @@ import (
 
 const WhoIsCmd = "whois %s | grep -E \\(Country\\|OrgName\\) | awk '{print $2}' | xargs"
 
+const ServerReady = "READY"
+const ServerDown = "Unable to connect to the server"
+const UnkownStatus = "U"
+
 func GetServerData(apiClient *api.API, domain string) model.Domain {
   var result model.Domain
 
@@ -39,8 +43,8 @@ func addExternalData(domainName string, domain *model.Domain) {
   for index, _ := range domain.Servers {
     owner, country := WhoIs(domain.Servers[index].Address)
 
-    if domain.Servers[index].Status == "Unable to connect to the server" {
-      domain.Servers[index].SslGrade = "U"      // Mark SslGrade as unknown if server is down
+    if domain.Servers[index].Status == ServerDown {
+      domain.Servers[index].SslGrade = UnkownStatus      // Mark SslGrade as unknown if server is down
       domain.IsDown = true
     }
 
@@ -55,7 +59,7 @@ func addExternalData(domainName string, domain *model.Domain) {
   domain.Name = domainName
   domain.Logo = logo
   domain.Title = title
-  domain.IsDown = domain.IsDown || domain.Status != "READY"
+  domain.IsDown = domain.IsDown || domain.Status != ServerReady
   domain.SslGrade = defineGlobalGrade(sslGrades)
 }
 
@@ -81,5 +85,5 @@ func defineGlobalGrade(sslGrades []string) string {
     return sslGrades[len(sslGrades) - 1]
   }
 
-  return "U"
+  return UnkownStatus
 }

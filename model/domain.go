@@ -4,17 +4,9 @@ import (
   "log"
   "server_id_api/db"
   "time"
+  "os"
+  "strconv"
 )
-
-type Server struct {
-  Address   string `json:"ipAddress"`
-  SslGrade  string `json:"grade"`
-  Status    string `json:"statusMessage"`
-  Country   string
-  Owner     string
-  id        int
-  domainId  int
-}
 
 type Domain struct {
   Servers           []Server  `json:"endpoints"`
@@ -42,13 +34,18 @@ const UpdateDomainQuery = `
   RETURNING id;
 `
 
-const InsertServerQuery = `
-  INSERT INTO servers (address, ssl_grade, status, country, owner, domain_id)
-  VALUES ('%s', '%s','%s', '%s', '%s', %d)
-  RETURNING id;
-`
-
 const TimeLayout = "2006-01-02 15:04:05 -0700"
+
+func TimeWindow() time.Time {
+  prevTime := os.Getenv("UPDATE_TIME_WINDOW")
+
+  if prevTime == "" {
+    prevTime = "1"
+  }
+
+  hours, _ := strconv.Atoi(prevTime)
+  return time.Now().Add(-time.Duration(hours) * time.Hour)
+}
 
 func (domain *Domain) Insert() (int, error) {
   conn := db.NewConn()
@@ -66,6 +63,26 @@ func (domain *Domain) Insert() (int, error) {
     log.Printf("Error Inserting domain: %v", err)
   } else {
     domain.Id = id
+  }
+
+  return id, err
+}
+
+func (domain *Domain) Update() (int, error) {
+  conn := db.NewConn()
+
+  id, err := conn.Update(
+    UpdateDomainQuery,
+    domain.SslGrade,
+    domain.Title,
+    domain.Logo,
+    domain.IsDown,
+    domain.UpdatedAt,
+    domain.Id,
+  )
+
+  if err != nil {
+    log.Printf("Error Updating Domain: %v", err)
   }
 
   return id, err
@@ -90,7 +107,7 @@ func (domain *Domain) Persist() {
 
 func (domain *Domain) ShouldUpdate() bool {
   timestamp, _ := time.Parse(TimeLayout, domain.UpdatedAt)
-  return timestamp.Before(time.Now().Add(-1*time.Hour))
+  return timestamp.Before(TimeWindow())
 }
 
 func (domain *Domain) InsertWithServers() {
@@ -173,44 +190,4 @@ func GetServersByDomain(domainId int) ([]Server, error) {
     }
     return servers, nil
   }
-}
-
-func (server *Server) Insert(domainId int) (int, error) {
-  conn := db.NewConn()
-
-  id, err := conn.Insert(
-    InsertServerQuery,
-    server.Address,
-    server.SslGrade,
-    server.Status,
-    server.Country,
-    server.Owner,
-    domainId,
-  )
-
-  if err != nil {
-    log.Printf("Error Inserting server: %v", err)
-  }
-
-  return id, err
-}
-
-func (domain *Domain) Update() (int, error) {
-  conn := db.NewConn()
-
-  id, err := conn.Update(
-    UpdateDomainQuery,
-    domain.SslGrade,
-    domain.Title,
-    domain.Logo,
-    domain.IsDown,
-    domain.UpdatedAt,
-    domain.Id,
-  )
-
-  if err != nil {
-    log.Printf("Error Updating Domain: %v", err)
-  }
-
-  return id, err
 }
