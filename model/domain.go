@@ -17,16 +17,17 @@ type Server struct {
 }
 
 type Domain struct {
-  Servers   []Server  `json:"endpoints"`
-  Status    string    `json:"status"`
-  Id        int
-  Name      string
-  Title     string
-  Logo      string
-  SslGrade  string
-  IsDown    bool
-  ServersChanged bool
-  UpdatedAt string
+  Servers           []Server  `json:"endpoints"`
+  Status            string    `json:"status"`
+  Id                int
+  Name              string
+  Title             string
+  Logo              string
+  SslGrade          string
+  PreviousSslGrade  string
+  IsDown            bool
+  ServersChanged    bool
+  UpdatedAt         string
 }
 
 const InsertDomainQuery = `
@@ -73,12 +74,15 @@ func (domain *Domain) Insert() (int, error) {
 func (domain *Domain) Persist() {
   prevDomain, _ := GetDomainByName(domain.Name)
 
-  if prevDomain != nil && prevDomain.ShouldUpdate() {
-    domain.Id = prevDomain.Id
-    domain.UpdatedAt = time.Now().Format(TimeLayout)
-    domain.UpdateWithServers()
+  if prevDomain != nil {
+    if prevDomain.ShouldUpdate() {
+      domain.Id = prevDomain.Id
+      domain.UpdatedAt = time.Now().Format(TimeLayout)
+      domain.UpdateWithServers()
+    }
 
     domain.ServersChanged = domain.SslGrade != prevDomain.SslGrade
+    domain.PreviousSslGrade = prevDomain.SslGrade
   } else {
     domain.InsertWithServers()
   }
