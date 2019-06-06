@@ -21,21 +21,17 @@ func NewConn() (*Conn) {
   return &Conn{db}
 }
 
+// PERSIST OPERATIONS
+
 func (conn *Conn) Insert(query string, args ...interface{}) (int, error) {
-  var id int
-  formattedQuery := fmt.Sprintf(query, args...)
-
-  err := conn.Client.QueryRow(formattedQuery).Scan(&id)
-
-  if err != nil {
-    return 0, err
-  } else {
-    log.Printf("Success Insert: %d", id)
-    return id, nil
-  }
+  return conn.Persist("Success Insert", query, args...)
 }
 
 func (conn *Conn) Update(query string, args ...interface{}) (int, error) {
+  return conn.Persist("Success Update", query, args...)
+}
+
+func (conn *Conn) Persist(logMessage string, query string, args ...interface{}) (int, error) {
   var id int
   formattedQuery := fmt.Sprintf(query, args...)
 
@@ -44,24 +40,12 @@ func (conn *Conn) Update(query string, args ...interface{}) (int, error) {
   if err != nil {
     return 0, err
   } else {
-    log.Printf("Success Update: %d", id)
+    log.Printf("%s: %d", logMessage, id)
     return id, nil
   }
 }
 
-func (conn *Conn) DeleteAllFrom(tableName string) (int, error) {
-  formattedQuery := fmt.Sprintf("DELETE FROM %s;", tableName)
-
-  result, err := conn.Client.Exec(formattedQuery)
-
-  if err != nil {
-    return 0, err
-  } else {
-    rows, _ := result.RowsAffected()
-    log.Printf("Success Delete Rows: %d", rows)
-    return int(rows), err
-  }
-}
+// SELECT OPERATIONS
 
 func (conn *Conn) Count(tableName string) (count int, err error) {
   formattedQuery := fmt.Sprintf("SELECT COUNT(*) as count FROM %s;", tableName)
@@ -80,10 +64,20 @@ func (conn *Conn) GetChildRecords(tableName string, foreignKey string, id int) (
   return conn.Client.Query(formattedQuery, id)
 }
 
-func (conn *Conn) DeleteChildRecords(tableName string, foreignKey string, id int) (count int, err error) {
-  formattedQuery := fmt.Sprintf("DELETE FROM %s WHERE %s = $1;", tableName, foreignKey)
+// DELETE OPERATIONS
 
-  result, err := conn.Client.Exec(formattedQuery, id)
+func (conn *Conn) DeleteChildRecords(tableName string, foreignKey string, id int) (count int, err error) {
+  formattedQuery := fmt.Sprintf("DELETE FROM %s WHERE %s = %d;", tableName, foreignKey, id)
+  return conn.Delete(formattedQuery)
+}
+
+func (conn *Conn) DeleteAllFrom(tableName string) (int, error) {
+  formattedQuery := fmt.Sprintf("DELETE FROM %s;", tableName)
+  return conn.Delete(formattedQuery)
+}
+
+func (conn *Conn) Delete(query string) (count int, err error) {
+  result, err := conn.Client.Exec(query)
 
   if err != nil {
     return 0, err
