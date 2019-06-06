@@ -41,3 +41,17 @@ func (server *Server) Insert(domainId int) (int, error) {
   return id, err
 }
 
+func (server *Server) FromDb(dataset Row) error {
+  err := dataset.Scan(
+    &server.id,
+    &server.Address,
+    &server.SslGrade,
+    &server.Status,
+    &server.Country,
+    &server.Owner,
+    &server.domainId,
+  )
+
+  return err
+}
+

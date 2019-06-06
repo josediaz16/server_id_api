@@ -4,6 +4,8 @@ import (
   "database/sql"
   "log"
   "fmt"
+  "encoding/json"
+  "strings"
   _ "github.com/lib/pq"
 )
 
@@ -59,9 +61,22 @@ func (conn *Conn) FindBy(tableName string, field string, value interface{}) (*sq
   return conn.Client.QueryRow(formattedQuery, value)
 }
 
+func (conn * Conn) GetAll(tableName string) (*sql.Rows, error) {
+  formattedQuery := fmt.Sprintf("SELECT * FROM %s", tableName)
+  return conn.Client.Query(formattedQuery)
+}
+
 func (conn *Conn) GetChildRecords(tableName string, foreignKey string, id int) (*sql.Rows, error) {
   formattedQuery := fmt.Sprintf("SELECT * FROM %s WHERE %s = $1;", tableName, foreignKey)
   return conn.Client.Query(formattedQuery, id)
+}
+
+func (conn *Conn) GetAllChilds(tableName string, foreignKey string, ids []int) (*sql.Rows, error) {
+  bytes, _ := json.Marshal(ids)
+  strIds := strings.Trim(string(bytes), "[]")
+
+  formattedQuery := fmt.Sprintf("SELECT * FROM %s WHERE %s IN(%s);", tableName, foreignKey, strIds)
+  return conn.Client.Query(formattedQuery)
 }
 
 // DELETE OPERATIONS

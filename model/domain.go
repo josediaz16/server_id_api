@@ -22,6 +22,10 @@ type Domain struct {
   UpdatedAt         string
 }
 
+type Row interface {
+  Scan(dest ...interface{}) error
+}
+
 const InsertDomainQuery = `
   INSERT INTO domains (name, ssl_grade, title, logo, is_down)
   VALUES ('%s', '%s', '%s', '%s', %t)
@@ -88,6 +92,19 @@ func (domain *Domain) Update() (int, error) {
   return id, err
 }
 
+func (domain *Domain) FromDb(dataset Row) error {
+  err := dataset.Scan(
+    &domain.Id,
+    &domain.Name,
+    &domain.SslGrade,
+    &domain.Title,
+    &domain.Logo,
+    &domain.IsDown,
+    &domain.UpdatedAt,
+  )
+  return err
+}
+
 func (domain *Domain) Persist() {
   prevDomain, _ := GetDomainByName(domain.Name)
 
@@ -102,6 +119,47 @@ func (domain *Domain) Persist() {
     domain.PreviousSslGrade = prevDomain.SslGrade
   } else {
     domain.InsertWithServers()
+  }
+}
+
+func ListDomains() ([]Domain, error) {
+  var domains []Domain
+  var domainIds []int
+
+  conn := db.NewConn()
+  rows, err := conn.GetAll("domains")
+
+  defer rows.Close()
+
+  if err != nil {
+    return domains, err
+  } else {
+
+    domainRegistry := make(map[int]*Domain)
+
+    for rows.Next() {
+      var domain Domain
+      domain.FromDb(rows)
+
+      domainIds = append(domainIds, domain.Id)
+      domainRegistry[domain.Id] = &domain
+    }
+
+    if len(domainIds) > 0 {
+      servers, _ := conn.GetAllChilds("servers", "domain_id", domainIds)
+
+      for servers.Next() {
+        var server Server
+        server.FromDb(servers)
+        domainRegistry[server.domainId].Servers = append(domainRegistry[server.domainId].Servers, server)
+      }
+    }
+
+    for _, domain := range domainRegistry {
+      domains = append(domains, *domain)
+    }
+
+    return domains, nil
   }
 }
 
@@ -140,15 +198,7 @@ func GetDomainByName(name string) (*Domain, error) {
   conn := db.NewConn()
   var domain Domain
 
-  err := conn.FindBy("domains", "name", name).Scan(
-    &domain.Id,
-    &domain.Name,
-    &domain.SslGrade,
-    &domain.Title,
-    &domain.Logo,
-    &domain.IsDown,
-    &domain.UpdatedAt,
-  )
+  err := domain.FromDb(conn.FindBy("domains", "name", name))
 
   if err != nil {
     return nil, err
@@ -173,21 +223,10 @@ func GetServersByDomain(domainId int) ([]Server, error) {
 
     for rows.Next() {
       var server Server
-
-      err := rows.Scan(
-        &server.id,
-        &server.Address,
-        &server.SslGrade,
-        &server.Status,
-        &server.Country,
-        &server.Owner,
-        &server.domainId,
-      )
-
-      if err == nil {
-        servers = append(servers, server)
-      }
+      server.FromDb(rows)
+      servers = append(servers, server)
     }
+
     return servers, nil
   }
 }
