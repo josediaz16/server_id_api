@@ -10,6 +10,7 @@ import (
   "github.com/go-chi/chi/middleware"
   "time"
   "net/http"
+  "encoding/json"
 )
 
 var sslLabsClient = api.API{&http.Client{}, "https://api.ssllabs.com"}
@@ -28,6 +29,7 @@ func main() {
   })
 
   r.Route("/domains", func(r chi.Router) {
+    r.Get("/", ListDomains)
     r.Route("/search", func(r chi.Router) {
       r.Use(DomainCtx)
       r.Get("/", GetDomain)   // GET /domains/search?domainName=google.com
@@ -44,6 +46,24 @@ func GetDomain(w http.ResponseWriter, r *http.Request) {
     render.Render(w, r, ErrRender(err))
     return
   }
+}
+
+func ListDomains(w http.ResponseWriter, r *http.Request) {
+  allDomains := make(map[string]*DomainResponse)
+  domains, err := servers.GetAllDomains()
+
+  if err != nil {
+    render.Render(w, r, ErrRender(err))
+    return
+  }
+
+  for domainName, domain := range domains {
+    allDomains[domainName] = NewDomainResponse(domain)
+  }
+
+  js, _ := json.Marshal(allDomains)
+
+  w.Write(js)
 }
 
 func DomainCtx(next http.Handler) http.Handler {
@@ -68,7 +88,7 @@ type DomainResponse struct {
   Servers          []ServerResponse `json:"servers"`
   ServersChanged   bool             `json:"servers_changed"`
   SslGrade         string           `json:"ssl_grade"`
-  PreviousSslGrade string           `json:"previous_ssl_Grade"`
+  PreviousSslGrade string           `json:"previous_ssl_Grade,omitempty"`
   Logo             string           `json:"logo"`
   Title            string           `json:"title"`
   IsDown           bool             `json:"is_down"`
