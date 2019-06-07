@@ -283,3 +283,67 @@ func TestGetServerDataServerNotFound(t *testing.T) {
   //Expectations
   runExpectations(t, expectations)
 }
+
+func TestGetAllDomainsNoDomainYet(t *testing.T) {
+  SetupTest()
+  domains, _ := servers.GetAllDomains()
+
+  if len(domains) > 0 {
+    t.Errorf("Domain count got %d, should be 0", len(domains))
+  }
+}
+
+func TestGetAllDomainsDomainsExist(t *testing.T) {
+  SetupTest()
+
+  domainServer1 := model.Server{
+    Address: "172.217.5.110",
+    SslGrade: "B",
+    Status: "Ready",
+    Country: "US",
+    Owner:  "Facebook",
+  }
+
+  domainServer2 := model.Server{
+    Address: "2607:f8b0:4005:808:0:0:0:200e",
+    SslGrade: "A",
+    Status: "Ready",
+    Country: "US",
+    Owner: "Facebook",
+  }
+
+  domain := model.Domain{
+    Name: "facebook.com",
+    SslGrade: "B",
+    Title: "Facebook",
+    Logo: "facebook.png",
+    IsDown: true,
+    Servers: []model.Server{domainServer1, domainServer2},
+  }
+
+  domain2 := model.Domain{
+    Name: "google.com",
+    SslGrade: "A",
+    Title: "Google",
+    Logo: "google.com.png",
+    IsDown: false,
+    Servers: []model.Server{expectedServer1, expectedServer2},
+  }
+
+  domain.InsertWithServers()
+
+  domain2.InsertWithServers()
+
+  domains, _ := servers.GetAllDomains()
+
+  var expectations = map[string][]interface{}{
+    "Domain Count":     []interface{}{len(domains), 2},
+    "Title":            []interface{}{domains["google.com"].Title, "Google"},
+    "Title2":           []interface{}{domains["facebook.com"].Title, "Facebook"},
+    "ServerCount":      []interface{}{len(domains["google.com"].Servers), 2},
+    "ServerCount2":     []interface{}{len(domains["facebook.com"].Servers), 2},
+  }
+
+  //Expectations
+  runExpectations(t, expectations)
+}

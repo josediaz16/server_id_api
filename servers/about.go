@@ -27,7 +27,8 @@ func GetAllDomains() (map[string]*model.Domain, error) {
     return domainRegistry, err
   }
 
-  for _, domain := range domains {
+  for index, _ := range domains {
+    domain := domains[index]
     domainIds = append(domainIds, domain.Id)
     domainIdRegistry[domain.Id] = domain.Name
     domainRegistry[domain.Name] = &domain
