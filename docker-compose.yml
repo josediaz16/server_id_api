@@ -55,13 +55,13 @@ services:
         aliases:
           - roach3
 
-  db_test_init:
+  db_init:
     image: cockroachdb/cockroach:v19.1.1
     depends_on:
       - roach2
     volumes:
-      - ./test/setup/setup_test_db.sh:/setup_db.sh
-      - ./test/setup/create_db.sql:/create_db.sql
+      - ./setup/setup_db.sh:/setup_db.sh
+      - ./setup/create_db.sql:/create_db.sql
     entrypoint: "/bin/bash"
     command: /setup_db.sh
     networks:
