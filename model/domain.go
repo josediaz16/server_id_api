@@ -124,7 +124,6 @@ func (domain *Domain) Persist() {
 
 func ListDomains() ([]Domain, error) {
   var domains []Domain
-  var domainIds []int
 
   conn := db.NewConn()
   rows, err := conn.GetAll("domains")
@@ -135,28 +134,10 @@ func ListDomains() ([]Domain, error) {
     return domains, err
   } else {
 
-    domainRegistry := make(map[int]*Domain)
-
     for rows.Next() {
       var domain Domain
       domain.FromDb(rows)
-
-      domainIds = append(domainIds, domain.Id)
-      domainRegistry[domain.Id] = &domain
-    }
-
-    if len(domainIds) > 0 {
-      servers, _ := conn.GetAllChilds("servers", "domain_id", domainIds)
-
-      for servers.Next() {
-        var server Server
-        server.FromDb(servers)
-        domainRegistry[server.domainId].Servers = append(domainRegistry[server.domainId].Servers, server)
-      }
-    }
-
-    for _, domain := range domainRegistry {
-      domains = append(domains, *domain)
+      domains = append(domains, domain)
     }
 
     return domains, nil
@@ -206,27 +187,5 @@ func GetDomainByName(name string) (*Domain, error) {
     servers, _ := GetServersByDomain(domain.Id)
     domain.Servers = servers
     return &domain, nil
-  }
-}
-
-func GetServersByDomain(domainId int) ([]Server, error) {
-  var servers []Server
-
-  conn := db.NewConn()
-  rows, err := conn.GetChildRecords("servers", "domain_id", domainId)
-
-  defer rows.Close()
-
-  if err != nil {
-    return servers, err
-  } else {
-
-    for rows.Next() {
-      var server Server
-      server.FromDb(rows)
-      servers = append(servers, server)
-    }
-
-    return servers, nil
   }
 }

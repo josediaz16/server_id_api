@@ -17,6 +17,38 @@ const ServerReady = "READY"
 const ServerDown = "Unable to connect to the server"
 const UnkownStatus = "U"
 
+func GetAllDomains() (map[string]*model.Domain, error) {
+  var domainIds []int
+  domainIdRegistry := make(map[int]string)
+  domainRegistry := make(map[string]*model.Domain)
+  domains, err := model.ListDomains()
+
+  if err != nil {
+    return domainRegistry, err
+  }
+
+  for _, domain := range domains {
+    domainIds = append(domainIds, domain.Id)
+    domainIdRegistry[domain.Id] = domain.Name
+    domainRegistry[domain.Name] = &domain
+  }
+
+  if len(domainIds) == 0 {
+    return domainRegistry, err
+  }
+
+  servers, _ := model.GetRelatedServers(domainIds)
+
+  for servers.Next() {
+    var server model.Server
+    server.FromDb(servers)
+    domainName := domainIdRegistry[server.GetDomainId()]
+    domainRegistry[domainName].Servers = append(domainRegistry[domainName].Servers, server)
+  }
+
+  return domainRegistry, nil
+}
+
 func GetServerData(apiClient *api.API, domain string) model.Domain {
   var result model.Domain
 

@@ -3,6 +3,7 @@ package model
 import (
   "log"
   "server_id_api/db"
+  "database/sql"
 )
 
 type Server struct {
@@ -41,6 +42,15 @@ func (server *Server) Insert(domainId int) (int, error) {
   return id, err
 }
 
+func GetRelatedServers(domainIds []int) (*sql.Rows, error) {
+  conn := db.NewConn()
+  return conn.GetAllChilds("servers", "domain_id", domainIds)
+}
+
+func (server *Server) GetDomainId() int {
+  return server.domainId
+}
+
 func (server *Server) FromDb(dataset Row) error {
   err := dataset.Scan(
     &server.id,
@@ -55,3 +65,24 @@ func (server *Server) FromDb(dataset Row) error {
   return err
 }
 
+func GetServersByDomain(domainId int) ([]Server, error) {
+  var servers []Server
+
+  conn := db.NewConn()
+  rows, err := conn.GetChildRecords("servers", "domain_id", domainId)
+
+  defer rows.Close()
+
+  if err != nil {
+    return servers, err
+  } else {
+
+    for rows.Next() {
+      var server Server
+      server.FromDb(rows)
+      servers = append(servers, server)
+    }
+
+    return servers, nil
+  }
+}
