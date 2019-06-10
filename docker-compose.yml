@@ -5,9 +5,12 @@ services:
     build:
      context: ./front
     ports:
-      - 8080:8080
+      - 5000:5000
+      - 8000:8000
     volumes:
       - ./front:/app
+    depends_on:
+      - api
     environment:
       - NODE_ENV=development
   api:

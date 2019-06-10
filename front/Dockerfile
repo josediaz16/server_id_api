@@ -14,6 +14,6 @@ RUN apt-get autoremove -y \
   && apt-get clean -y \
   && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 8080
+EXPOSE 5000
 
-CMD ["yarn", "serve"]
+CMD ["yarn", "serve", "--port", "5000"]
