@@ -8,6 +8,7 @@ import (
   "github.com/go-chi/chi"
   "github.com/go-chi/render"
   "github.com/go-chi/chi/middleware"
+  "github.com/go-chi/cors"
   "time"
   "net/http"
   "encoding/json"
@@ -18,10 +19,17 @@ var sslLabsClient = api.API{&http.Client{}, "https://api.ssllabs.com"}
 func main() {
   r := chi.NewRouter()
 
+  cors := cors.New(cors.Options{
+    AllowedOrigins: []string{"*"},
+    AllowedMethods: []string{"GET"},
+    MaxAge:         300,
+  })
+
   r.Use(middleware.RealIP)
   r.Use(middleware.Logger)
   r.Use(middleware.Recoverer)
   r.Use(middleware.Timeout(60 * time.Second))
+  r.Use(cors.Handler)
   r.Use(render.SetContentType(render.ContentTypeJSON))
 
   r.Get("/", func(w http.ResponseWriter, r *http.Request) {
