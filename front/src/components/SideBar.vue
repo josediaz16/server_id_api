@@ -5,7 +5,7 @@
       <li class="active">
         <svg class="icon">
           <use xlink:href="../assets/icons.svg#server"/>
-      </svg>
+        </svg>
         Servers
       </li>
       <li>
@@ -37,14 +37,9 @@ export default {
   box-shadow: inset -5px 0px 4px 0px #e5e9ec;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
 .sidebar img.app-logo {
   margin-bottom: 50px;
-  width: 150px;
+  width: 130px;
 }
 
 .sidebar li {

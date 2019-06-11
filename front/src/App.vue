@@ -2,12 +2,14 @@
   <div id="app">
     <SideBar />
     <div class="dashboard">
+      <DomainList v-bind:domains="domains"/>
+    </div>
+    <div>
       <SearchBox
         plh="Type a server domain"
         v-on:search="searchServer"
       />
       <DomainCard v-if="currentDomain" v-bind:domain="currentDomain"/>
-      <DomainList v-bind:domains="domains"/>
     </div>
   </div>
 </template>
@@ -61,6 +63,20 @@ body {
   margin: 0;
 }
 
+h4, h5 {
+  margin: 10px 0;
+  color: #5d6777;
+}
+
+h5 {
+  font-size: 0.95em;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -68,12 +84,12 @@ body {
   color: #2c3e50;
 
   display: grid;
-  grid-template-columns: 1fr 9fr;
+  grid-template-columns: 150px 3fr 1fr;
 }
 
 #app .dashboard {
   background: #eaf0f5;
-  padding: 20px;
+  padding: 20px 50px;
 }
 
 #app input.input-error {

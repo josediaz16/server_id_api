@@ -1,13 +1,11 @@
 <template>
   <div class="domain-list">
-    <div
-      class="domain-item"
+    <DomainCard
       v-for="(domain, name) in domains"
       v-bind:key="name"
-    >
-      <h4>{{name}}</h4>
-      <DomainCard v-bind:domain="domain"/>
-    </div>
+      v-bind:domain="domain"
+      v-bind:name="name"
+    />
   </div>
 </template>
 
@@ -25,3 +23,12 @@ export default {
   }
 }
 </script>
+
+<style>
+.domain-list {
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 30px;
+  display: grid;
+}
+
+</style>
