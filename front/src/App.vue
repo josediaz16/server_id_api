@@ -1,19 +1,20 @@
 <template>
   <div id="app">
-    <img class="app-logo" alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Server ID Service"/>
-    <SearchBox
-      plh="Type a server domain"
-      v-on:search="searchServer"
-    />
-    <DomainCard v-if="currentDomain" v-bind:domain="currentDomain"/>
-    <DomainList v-bind:domains="domains"/>
+    <SideBar />
+    <div class="dashboard">
+      <SearchBox
+        plh="Type a server domain"
+        v-on:search="searchServer"
+      />
+      <DomainCard v-if="currentDomain" v-bind:domain="currentDomain"/>
+      <DomainList v-bind:domains="domains"/>
+    </div>
   </div>
 </template>
 
 <script>
 // Custom Components
-import HelloWorld from './components/HelloWorld.vue'
+import SideBar    from './components/SideBar.vue'
 import SearchBox  from './components/SearchBox.vue'
 import DomainCard from './components/DomainCard.vue'
 import DomainList from './components/DomainList.vue'
@@ -30,7 +31,7 @@ export default {
     }
   },
   components: {
-    HelloWorld,
+    SideBar,
     SearchBox,
     DomainCard,
     DomainList
@@ -55,16 +56,24 @@ export default {
 </script>
 
 <style>
+
+body {
+  margin: 0;
+}
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: left;
   color: #2c3e50;
+
+  display: grid;
+  grid-template-columns: 1fr 9fr;
 }
 
-#app img.app-logo {
-  width: 200px;
+#app .dashboard {
+  background: #eaf0f5;
+  padding: 20px;
 }
 
 #app input.input-error {
