@@ -23,7 +23,7 @@ func SetupTest() {
     SslGrade: "A",
     Status: "Ready",
     Country: "US",
-    Owner:  "Google",
+    Owner:  "Google LLC",
   }
 
   expectedServer2 = model.Server{
@@ -31,7 +31,7 @@ func SetupTest() {
     SslGrade: "A",
     Status: "Ready",
     Country: "US",
-    Owner: "Google",
+    Owner: "Google LLC",
   }
 }
 
@@ -212,7 +212,7 @@ func TestGetServerDataBetweenTime(t *testing.T) {
     SslGrade: "B",
     Status: "Ready",
     Country: "US",
-    Owner:  "Google",
+    Owner:  "Google LLC",
   }
 
   previousServer2 := model.Server{
@@ -220,7 +220,7 @@ func TestGetServerDataBetweenTime(t *testing.T) {
     SslGrade: "A",
     Status: "Ready",
     Country: "US",
-    Owner: "Google",
+    Owner: "Google LLC",
   }
 
   domain := model.Domain{

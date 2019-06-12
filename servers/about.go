@@ -11,7 +11,7 @@ import (
   "sort"
 )
 
-const WhoIsCmd = "whois %s | grep -E \\(Country\\|OrgName\\) | awk '{print $2}' | xargs"
+const WhoIsCmd = "whois %s | grep -E \\(Country\\|OrgName\\) | awk -F ':' '{print $2}' | paste -sd \",\" | xargs"
 
 const ServerReady = "READY"
 const ServerDown = "Unable to connect to the server"
@@ -106,8 +106,8 @@ func WhoIs(ip string) (string, string) {
   }
 
   trimmedOutput := strings.TrimRight(string(out), "\r\n")
-  commandValues := strings.Split(trimmedOutput, " ")
-  return commandValues[0], commandValues[1]
+  commandValues := strings.Split(trimmedOutput, ",")
+  return commandValues[0], strings.TrimSpace(commandValues[1])
 }
 
 func defineGlobalGrade(sslGrades []string) string {
