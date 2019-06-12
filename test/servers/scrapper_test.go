@@ -19,3 +19,23 @@ func TestGetDomainHeadIsOk(t *testing.T) {
     t.Errorf("TestGetDomainHeadIsOk(stackoverflow.com) got logo %v, should be %v", logo, expectedLogo)
   }
 }
+
+func TestCheckRelativePathOnlyPath(t *testing.T) {
+  logo := servers.CheckRelativePath("instagram.com", "/assets/favicon-b8.ico")
+
+  expectedLogo := "http://instagram.com/assets/favicon-b8.ico"
+
+  if logo != expectedLogo {
+    t.Errorf("TestCheckRelativePath got logo %v, should be %v", logo, expectedLogo)
+  }
+}
+
+func TestCheckRelativePathFullUrl(t *testing.T) {
+  logo := servers.CheckRelativePath("instagram.com", "http://instagram.com/assets/favicon-b8.ico")
+
+  expectedLogo := "http://instagram.com/assets/favicon-b8.ico"
+
+  if logo != expectedLogo {
+    t.Errorf("TestCheckRelativePath got logo %v, should be %v", logo, expectedLogo)
+  }
+}

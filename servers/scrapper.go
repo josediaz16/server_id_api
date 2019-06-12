@@ -5,7 +5,9 @@ import (
   "log"
   "net/http"
   "github.com/PuerkitoBio/goquery"
+  "regexp"
 )
+
 
 func GetDomainHead(domain string) (string, string) {
   response, err := http.Get(fmt.Sprintf("http://%s", domain))
@@ -26,5 +28,19 @@ func GetDomainHead(domain string) (string, string) {
 
   title := document.Find("title").Text()
   logo, _  := document.Find("head [rel='shortcut icon']").Attr("href")
-  return title, logo
+
+  if logo == "" {
+    logo, _ = document.Find("head [rel*='icon']").Attr("href")
+  }
+  return title, CheckRelativePath(domain, logo)
+}
+
+func CheckRelativePath(domain, path string) string {
+  pathRegex := regexp.MustCompile(`^\/.+\.(?:ico|png|jpg)`)
+
+  if matchPath := pathRegex.MatchString(path); matchPath {
+    return fmt.Sprintf("http://%s%s", domain, path)
+  } else {
+    return path
+  }
 }
