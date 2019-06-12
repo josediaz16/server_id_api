@@ -2,7 +2,7 @@
 
   <div class="domain-item">
     <div class="domain-header">
-      <img v-bind:src="logo" alt="">
+      <img v-bind:src="logo" @error="onLogoFailure($event)">
       <h4>{{name}}</h4>
     </div>
 
@@ -45,7 +45,7 @@
     <div v-if="showServers" class="domain-servers">
       <h5>Servers</h5>
       <div class="server-list">
-        <div v-for="(server, index) in domain.servers" v-bind:key="server.ip_address" class="server-item">
+        <div v-for="(server) in domain.servers" v-bind:key="server.ip_address" class="server-item">
           <ul>
             <li class="ip-address">
               <svg class="icon">
@@ -81,6 +81,7 @@
 <script>
 
 const icons = require("../assets/icons.svg")
+const DefaultLogo = require("../assets/default-logo.png")
 
 const GradeOptions = {
   "A":  "A",
@@ -110,11 +111,14 @@ export default {
     },
     sslGradeIcon: function(grade) {
       return `${icons}#letter-${GradeOptions[grade].toLowerCase()}`
+    },
+    onLogoFailure(event) {
+      event.target.src = DefaultLogo
     }
   },
   computed: {
     logo: function() {
-      return this.domain.logo === "" ? require("../assets/default-logo.png") : this.domain.logo
+      return this.domain.logo === "" ? DefaultLogo : this.domain.logo
     },
   }
 }
@@ -133,7 +137,8 @@ export default {
   padding: 30px;
 }
 
-.domain-header img {
+.domain-header img,
+.domain-header object {
   width: 50px;
 }
 
@@ -184,7 +189,7 @@ export default {
 .domain-servers svg.icon {
   height: 20px;
   width: 20px;
-  margin-right: 15px;
+  margin-right: 5px;
 }
 
 .server-list {
@@ -208,6 +213,7 @@ export default {
   box-shadow: 1px 1px 5px #ccc;
   border-radius: 5px;
   padding: 5px 10px;
+  width: 125px;
 }
 
 </style>

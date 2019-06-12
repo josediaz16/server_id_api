@@ -84,7 +84,7 @@ ul {
   color: #2c3e50;
 
   display: grid;
-  grid-template-columns: 150px 3fr 1fr;
+  grid-template-columns: 150px 1fr 350px;
 }
 
 #app .dashboard {

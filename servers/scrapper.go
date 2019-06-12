@@ -25,6 +25,6 @@ func GetDomainHead(domain string) (string, string) {
   }
 
   title := document.Find("title").Text()
-  logo, _  := document.Find("head [rel*='icon']").Attr("href")
+  logo, _  := document.Find("head [rel='shortcut icon']").Attr("href")
   return title, logo
 }
