@@ -59,36 +59,37 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .search-box {
   grid-template-columns: 5fr 1fr;
-  padding: 20px 5px;
   grid-column-gap: 10px;
+  padding: 20px 5px;
   display: grid;
+
+  input {
+    background: #f6f8fa;
+    border-radius: 5px;
+    padding: 10px;
+    border: none;
+
+    &.input-error {
+      border: 1px solid #d75b4b;
+    }
+  }
+
+  button {
+    background: rgba(79, 179, 103, 0.73);
+    border-radius: 5px;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+  }
+
+  input.input-error ~ span {
+    font-size: 13px;
+    color: #d75b4b;
+    padding: 5px 0;
+  }
 }
 
-.search-box input {
-  background: #f6f8fa;
-  border-radius: 5px;
-  padding: 10px;
-  border: none;
-}
-
-.search-box input.input-error {
-  border: 1px solid #d75b4b;
-}
-
-.search-box button {
-  background: rgba(79, 179, 103, 0.73);
-  border-radius: 5px;
-  font-weight: bold;
-  color: #fff;
-  border: none;
-}
-
-.search-box input.input-error ~ span {
-  font-size: 13px;
-  color: #d75b4b;
-  padding: 5px 0;
-}
 </style>

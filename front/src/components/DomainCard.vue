@@ -66,7 +66,6 @@
 
 import Icon from './Icon'
 
-const icons = require("../assets/icons.svg")
 const DefaultLogo = require("../assets/default-logo.png")
 
 const GradeOptions = {
@@ -113,7 +112,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .domain-item {
   background: #ffffff;
   border-radius: 15px;
@@ -124,11 +123,10 @@ export default {
   border-bottom: 2px solid #f8fafb;
   text-align: center;
   padding: 30px;
-}
 
-.domain-header img,
-.domain-header object {
-  width: 50px;
+  img, object {
+    width: 50px;
+  }
 }
 
 .domain-detail,
@@ -139,39 +137,39 @@ export default {
 .domain-detail {
   border-bottom: 2px solid #f8fafb;
   position: relative;
-}
 
-.domain-detail span.down-arrow {
-  content: "";
-  width: 40px;
-  height: 40px;
-  position: absolute;
-  bottom: -10%;
-  left: 45%;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0px 0px 5px 1px #e8e1e1;
-}
+  span.down-arrow {
+    box-shadow: 0px 0px 5px 1px #e8e1e1;
+    border-radius: 50%;
+    position: absolute;
+    background: #fff;
+    bottom: -10%;
+    height: 40px;
+    width: 40px;
+    content: "";
+    left: 45%;
 
-.domain-detail span.down-arrow:before {
-  content: "";
-  transform: rotate(45deg);
-  width: 8px;
-  height: 8px;
-  display: inline-block;
-  position: absolute;
-  border-bottom: 2px solid #ccc;
-  border-right: 2px solid #ccc;
-  bottom: 39%;
-  left: 40%;
-  z-index: 2;
-}
+    &:before {
+      border-bottom: 2px solid #ccc;
+      border-right: 2px solid #ccc;
+      transform: rotate(45deg);
+      display: inline-block;
+      position: absolute;
+      height: 8px;
+      content: "";
+      bottom: 39%;
+      width: 8px;
+      z-index: 2;
+      left: 40%;
+    }
+  }
 
-.domain-detail li {
-  align-items: center;
-  display: flex;
-  padding: 5px 0;
-  font-size: 14px;
+  li {
+    align-items: center;
+    display: flex;
+    padding: 5px 0;
+    font-size: 14px;
+  }
 }
 
 .domain-detail svg.icon,
@@ -185,17 +183,17 @@ export default {
   grid-template-columns: 1fr 1fr;
   grid-gap: 10px;
   display: grid;
-}
 
-.server-list li {
-  font-size: 12px;
-}
+  li {
+    font-size: 12px;
 
-.server-list li.ip-address {
-  width: 150px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    &.ip-address {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 150px;
+    }
+  }
 }
 
 .server-item {
