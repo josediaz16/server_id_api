@@ -186,13 +186,7 @@ export default {
 
   li {
     font-size: 12px;
-
-    &.ip-address {
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      width: 150px;
-    }
+    word-break: break-all;
   }
 }
 
