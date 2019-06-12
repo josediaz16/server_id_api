@@ -3,16 +3,12 @@
     <img class="app-logo" alt="Vue logo" src="../assets/logo.png">
     <ul>
       <li class="active">
-        <svg class="icon">
-          <use xlink:href="../assets/icons.svg#server"/>
-        </svg>
+        <Icon iconname="server"/>
         Servers
       </li>
       <li>
-        <svg class="icon">
-          <use xlink:href="../assets/icons.svg#server"/>
-      </svg>
-        About
+        <Icon iconname="improvement"/>
+        Comming soon
       </li>
     </ul>
   </div>
@@ -20,10 +16,15 @@
 
 <script>
 
+import Icon from './Icon'
+
 export default {
-  name: 'HelloWorld',
+  name: 'SideBar',
   props: {
     msg: String
+  },
+  components: {
+    Icon
   }
 }
 </script>

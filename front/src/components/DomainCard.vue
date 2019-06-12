@@ -11,30 +11,22 @@
       <ul>
 
         <li>
-          <svg class="icon">
-            <use :xlink:href="checkOrNot(!domain.is_down)"/>
-          </svg>
+          <Icon v-bind:iconname="checkOrNot(!domain.is_down)"/>
           Domain Up
         </li>
 
         <li>
-          <svg class="icon">
-            <use :xlink:href="checkOrNot(!domain.servers_changed)"/>
-          </svg>
+          <Icon v-bind:iconname="checkOrNot(!domain.servers_changed)"/>
           Servers changed
         </li>
 
         <li>
-          <svg class="icon">
-            <use :xlink:href="sslGradeIcon(domain.ssl_grade)"/>
-          </svg>
+          <Icon v-bind:iconname="sslGradeIcon(domain.ssl_grade)"/>
           Ssl grade {{domain.ssl_grade}}
         </li>
 
         <li>
-          <svg class="icon">
-            <use :xlink:href="sslGradeIcon(domain.previous_ssl_grade)"/>
-          </svg>
+          <Icon v-bind:iconname="sslGradeIcon(domain.previous_ssl_grade)"/>
           Previous Ssl grade {{domain.ssl_grade}}
         </li>
       </ul>
@@ -48,27 +40,19 @@
         <div v-for="(server) in domain.servers" v-bind:key="server.ip_address" class="server-item">
           <ul>
             <li class="ip-address">
-              <svg class="icon">
-                <use xlink:href="../assets/icons.svg#placeholder"/>
-              </svg>
+              <Icon iconname="placeholder"/>
               {{server.ip_address}}
             </li>
             <li>
-              <svg class="icon">
-                <use :xlink:href="sslGradeIcon(server.grade)"/>
-              </svg>
+              <Icon v-bind:iconname="sslGradeIcon(server.grade)"/>
               Ssl grade {{server.grade}}
             </li>
             <li>
-              <svg class="icon">
-                <use xlink:href="../assets/icons.svg#flag"/>
-              </svg>
+              <Icon iconname="flag"/>
               Country: {{server.country}}
             </li>
             <li>
-              <svg class="icon">
-                <use xlink:href="../assets/icons.svg#visitor"/>
-              </svg>
+              <Icon iconname="visitor"/>
               Owner: {{server.owner}}
             </li>
           </ul>
@@ -79,6 +63,8 @@
 </template>
 
 <script>
+
+import Icon from './Icon'
 
 const icons = require("../assets/icons.svg")
 const DefaultLogo = require("../assets/default-logo.png")
@@ -100,6 +86,9 @@ export default {
     domain: Object,
     name: String
   },
+  components: {
+    Icon
+  },
   data: function() {
     return {
       showServers: false
@@ -107,10 +96,10 @@ export default {
   },
   methods: {
     checkOrNot: function(flag) {
-      return flag ? `${icons}#checked` : `${icons}#error`
+      return flag ? "checked" : "error"
     },
     sslGradeIcon: function(grade) {
-      return `${icons}#letter-${GradeOptions[grade].toLowerCase()}`
+      return `letter-${GradeOptions[grade].toLowerCase()}`
     },
     onLogoFailure(event) {
       event.target.src = DefaultLogo

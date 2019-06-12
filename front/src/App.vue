@@ -46,12 +46,12 @@ export default {
       axios.get("http://localhost:3000/domains/search", {params: {domainName: query}})
         .then((response) => this.currentDomain = response.data )
         .then(this.fetchDomains)
-        .catch((error) => console.log(error))
+        .catch(console.log)
     },
     fetchDomains: function() {
       axios.get("http://localhost:3000/domains")
         .then((response) => this.domains = response.data)
-        .catch((error) => console.log(error))
+        .catch(console.log)
     }
   }
 }
