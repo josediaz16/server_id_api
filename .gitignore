@@ -16,3 +16,4 @@ front/dist
 .ssh/*
 
 *.env
+server_id_api
