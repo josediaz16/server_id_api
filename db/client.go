@@ -4,6 +4,7 @@ import (
   "database/sql"
   "log"
   "fmt"
+  "os"
   "encoding/json"
   "strings"
   _ "github.com/lib/pq"
@@ -14,7 +15,7 @@ type Conn struct {
 }
 
 func NewConn() (*Conn) {
-  db, err := sql.Open("postgres", "postgresql://serverapi@roach1:26257/servers_test?sslmode=disable")
+  db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 
   if err != nil {
     log.Fatal("error connecting to database: ", err)

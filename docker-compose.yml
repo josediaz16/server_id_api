@@ -20,6 +20,8 @@ services:
       - ./:/go/src/server_id_api
     ports:
       - 3000:3000
+    environment:
+      - DATABASE_URL=postgresql://serverapi@roach1:26257/servers_dev?sslmode=disable
     depends_on:
       - roach1
       - roach2
