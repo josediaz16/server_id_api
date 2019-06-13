@@ -8,12 +8,9 @@ blocks:
   - name: Build
     task:
       jobs:
-        - name: Docker Build
+        - name: Docker Build & Test
           commands:
+            - checkout
             - docker-compose build api
-        - name: Setup DB
-          commands:
             - docker-compose run -e DATABASE=servers_prod db_init /setup_db.sh
-        - name: Run Tests
-          commands:
             - docker-compose run api ./run_tests.sh
