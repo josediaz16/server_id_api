@@ -13,12 +13,9 @@ blocks:
             - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
             - checkout
             - cp ~/api.env .env
-            - cat .env
             - cp ~/vue.env front/.env.production
             - mkdir -p .ssh
             - cp ~/deploy_key .ssh/id_rsa
-            - cat .ssh/id_rsa
-            - cat front/.env.production
             - ./deploy/full_up
       secrets:
         - name: prod-env-secret
