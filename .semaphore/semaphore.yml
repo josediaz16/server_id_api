@@ -12,5 +12,5 @@ blocks:
           commands:
             - checkout
             - docker-compose build api
-            - docker-compose run -e DATABASE=servers_prod db_init /setup_db.sh
+            - docker-compose run -e DATABASE=servers_test db_init /setup_db.sh
             - docker-compose run api ./run_tests.sh
