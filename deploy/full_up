@@ -1,0 +1,9 @@
+#!/bin/bash --login
+
+sudo docker build -f front/prod/Dockerfile -t jldiazb16/server_id_web front/
+sudo docker build -f api/docker/prod/Dockerfile -t jldiazb16/server_id_api api/
+
+sudo docker push jldiazb16/server_id_web
+sudo docker push jldiazb16/server_id_api
+
+./deploy/up
