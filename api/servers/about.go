@@ -83,8 +83,8 @@ func addExternalData(domainName string, domain *model.Domain) {
 
     sslGrades[index] = domain.Servers[index].SslGrade
 
-    domain.Servers[index].Country = owner
-    domain.Servers[index].Owner = country
+    domain.Servers[index].Country = country
+    domain.Servers[index].Owner = owner
   }
 
   title, logo := GetDomainHead(domainName)
