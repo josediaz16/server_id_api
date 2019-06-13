@@ -14,10 +14,11 @@ services:
     environment:
       - NODE_ENV=development
   api:
-    build: .
+    build:
+      context: ./api
     command: "./server_id_api"
     volumes:
-      - ./:/go/src/server_id_api
+      - ./api:/go/src/server_id_api
     ports:
       - 3000:3000
     environment:
