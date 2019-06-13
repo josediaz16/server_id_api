@@ -10,4 +10,7 @@
 *.env.*.local
 
 *node_modules
+*log
 front/dist
+
+.ssh/*

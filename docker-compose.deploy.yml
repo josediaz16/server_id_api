@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  deploy:
+    build:
+     context: ./deploy
+    volumes:
+      - ./:/app
+      - ./.ssh:/root/.ssh
+    entrypoint: "/app/deploy/docker_entrypoint"
