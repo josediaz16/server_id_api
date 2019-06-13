@@ -24,6 +24,8 @@ import DomainList from './components/DomainList.vue'
 // Libraries
 import axios      from 'axios'
 
+const Host = process.env.VUE_APP_API_HOST
+
 export default {
   name: 'app',
   data: function() {
@@ -43,13 +45,13 @@ export default {
   },
   methods: {
     searchServer: function(query) {
-      axios.get("http://localhost:3000/domains/search", {params: {domainName: query}})
+      axios.get(`${Host}/domains/search`, {params: {domainName: query}})
         .then((response) => this.currentDomain = response.data )
         .then(this.fetchDomains)
         .catch(console.log)
     },
     fetchDomains: function() {
-      axios.get("http://localhost:3000/domains")
+      axios.get(`${Host}/domains`)
         .then((response) => this.domains = response.data)
         .catch(console.log)
     }
