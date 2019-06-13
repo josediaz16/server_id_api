@@ -1,0 +1,5 @@
+#!/bin/bash --login
+
+sudo docker-compose -f docker-compose.prod.yml -p server_id_api pull web
+sudo docker-compose -f docker-compose.prod.yml -p server_id_api pull api
+sudo docker-compose -f docker-compose.prod.yml -p server_id_api up web -d

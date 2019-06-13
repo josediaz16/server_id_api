@@ -1,0 +1,5 @@
+#!/bin/bash --login
+# Full Deploy with Docker
+
+sudo docker-compose -f docker-compose.deploy.yml run deploy cap production deploy
+sudo docker-compose -f docker-compose.deploy.yml run deploy deploy/reload_server
