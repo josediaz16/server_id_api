@@ -11,6 +11,13 @@ blocks:
         - name: Docker Build & Test
           commands:
             - checkout
+            - cp ~/api.env .env
+            - cat .env
+            - cp ~/vue.env front/.env.production
+            - cat front/.env.production
             - docker-compose build api
             - docker-compose run -e DATABASE=servers_test db_init /setup_db.sh
             - docker-compose run api ./run_tests.sh
+      secrets:
+        - name: prod-env-secret
+        - name: vue-prod-env
