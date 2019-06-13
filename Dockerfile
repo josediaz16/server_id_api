@@ -17,5 +17,6 @@ RUN go install -v ./...
 RUN go mod tidy
 
 EXPOSE 3000
+ENTRYPOINT ["./docker/dev_entry_point"]
 
 CMD ["server_id_api"]
