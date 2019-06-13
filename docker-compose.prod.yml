@@ -1,7 +1,8 @@
 version: '3'
 services:
   web:
-    image: josediaz/server_id_web
+    image: jldiazb16/server_id_web
+    env_file: .env
     depends_on:
       - api
     ports:
@@ -12,7 +13,8 @@ services:
       - roachnet
 
   api:
-    image: josediaz/server_id_api
+    image: jldiazb16/server_id_api
+    env_file: .env
     command: /go/bin/api
     ports:
       - 3000:3000
