@@ -347,3 +347,28 @@ func TestGetAllDomainsDomainsExist(t *testing.T) {
   //Expectations
   runExpectations(t, expectations)
 }
+
+
+func TestWhoIsKnownServer(t *testing.T) {
+  owner, country := servers.WhoIs("172.217.5.110")
+
+  var expectations = map[string][]interface{}{
+    "Owner":     []interface{}{owner, "Google LLC"},
+    "Country":   []interface{}{country, "US"},
+  }
+
+  //Expectations
+  runExpectations(t, expectations)
+}
+
+func TestWhoIsWeirdIp(t *testing.T) {
+  owner, country := servers.WhoIs("2a03:2880:f127:283:face:b00c:0:25d")
+
+  var expectations = map[string][]interface{}{
+    "Owner":     []interface{}{owner, "Unknown"},
+    "Country":   []interface{}{country, "Unknown"},
+  }
+
+  //Expectations
+  runExpectations(t, expectations)
+}

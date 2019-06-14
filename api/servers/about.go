@@ -107,7 +107,13 @@ func WhoIs(ip string) (string, string) {
 
   trimmedOutput := strings.TrimRight(string(out), "\r\n")
   commandValues := strings.Split(trimmedOutput, ",")
+
+  if len(commandValues) != 2 {
+    return "Unknown", "Unknown"
+  }
+
   return commandValues[0], strings.TrimSpace(commandValues[1])
+
 }
 
 func defineGlobalGrade(sslGrades []string) string {
