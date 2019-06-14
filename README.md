@@ -28,7 +28,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 A step by step series of examples that tell you how to get a development env running
 
-  1. Run `sudo docker-compose run db_init to create the database.`
+  1. Run `sudo docker-compose run db_init` to create the database.`
   3. Run `sudo docker-compose run -e DATABASE=servers_test db_init /setup_db.sh` to create the test database.
 
 ### Running the app
