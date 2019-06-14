@@ -38,7 +38,7 @@ A step by step series of examples that tell you how to get a development env run
 ### Running the app in prod mode
 
   1. Create a .env file at project root with DATABASE_URL variable.
-  2. Run app locally but with production configuration `sudo docker-compose -f docker-compose.prod.yml up front`
+  2. Run app locally but with production configuration `sudo docker-compose -f docker-compose.prod.yml up web`
 
 ## Test Suite
 
