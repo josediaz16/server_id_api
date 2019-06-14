@@ -81,6 +81,7 @@ in project root. Check out the docs at [Semaphoreci](https://docs.semaphoreci.co
 - Generate API documentation
 - Add integration tests
 - Deploy the app in a multi-host environment (Kubernetes Maybe)
+- Add responsive
 
 ## Contributing
 
