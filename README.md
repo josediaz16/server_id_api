@@ -33,7 +33,7 @@ A step by step series of examples that tell you how to get a development env run
 
 ### Running the app
 
-  - Run app in development mode `sudo docker-compose up front`
+  - Run app in development mode `sudo docker-compose up front` and visit http://localhost:5000
   
 ### Running the app in prod mode
 
