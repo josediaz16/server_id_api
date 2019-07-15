@@ -5,7 +5,7 @@
 Server ID api is a service that allows you to check different data about domains, including Ssl grade, owners and servers country.
 
 ## Site
-Check out the app here [Server ID Api](http://34.220.54.27)
+Check out the app here [Server ID Api](http://ec2-18-236-246-47.us-west-2.compute.amazonaws.com)
 
 Interact with the api at http://34.220.54.27/api
 

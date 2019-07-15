@@ -1,3 +1,3 @@
 #!/bin/bash --login
 
-ssh -o StrictHostKeyChecking=no deploy@34.220.54.27 "source ~/.profile; cd /var/www/server_id_api/current; deploy/reload"
+ssh -o StrictHostKeyChecking=no deploy@18.236.246.47 "source ~/.profile; cd /var/www/server_id_api/current; deploy/reload"

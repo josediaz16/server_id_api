@@ -1,4 +1,4 @@
-role :app, %w(34.220.54.27)
+role :app, %w(18.236.246.47)
 set :keep_releases, 2
 
 set :ssh_options, {
